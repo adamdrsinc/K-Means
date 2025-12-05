@@ -44,25 +44,57 @@ def main():
                  [0, 0, 0, 0, 1],
                  [0, 1, 0, 0, 0],
                  [0, 0, 0, 1, 0]]
-    points = [(0, 4), (1, 1), (2, 3), (3, 0), (4, 2)]
+    points = [(2, 4), (0, 3), (4, 1), (1, 0), (3, 3),
+              (2, 1), (0, 2), (1, 4), (3, 0), (4, 2)]
 
     k = 3
     centroids = random_centroids(data_array=temp_data, k=k)
     bins = bins_setup(centroids)
 
-    # Calculate euclidean distance between each data object (o) and each centroid (c)
-    # 1. Go through each data point and calculate the eucl_distance between it and each cluster
-    # 2. Put them in bins for each cluster that it's closest to
-    for point in points:
-        shortest_distance = 100_000_000  # Picked to represent infinity
-        chosen_centroid = None
-        for centroid in centroids:
-            distance = eucl_distance(point, centroid)
-            if distance < shortest_distance and distance >= 0:
-                shortest_distance = distance
-                chosen_centroid = centroid
+    while True:
+        # Calculate euclidean distance between each data object (o) and each centroid (c)
+        # 1. Go through each data point and calculate the eucl_distance between it and each cluster
+        # 2. Put them in bins for each cluster that it's closest to
+        for point in points:
+            shortest_distance = 100_000_000  # Picked to represent infinity
+            chosen_centroid = None
+            for centroid in centroids:
+                distance = eucl_distance(point, centroid)
+                if distance < shortest_distance and distance >= 0:
+                    shortest_distance = distance
+                    chosen_centroid = centroid
 
-        bins[chosen_centroid].append(point)
+            bins[chosen_centroid].append(point)
+
+        averages = []
+        # Calculate the average X and Y values of each data point in
+        # each cluster and set this centroid as this average
+        for _, data in bins.items():
+            # key = centroid
+            # value = array of points that are closest to it
+            if len(data) == 0:
+                averages.append((0, 0))
+                continue
+
+            x_total = y_total = 0
+            for i in range(len(data)):
+                x_total += data[i][0]
+                y_total += data[i][1]
+            x_average = x_total / len(data)
+            y_average = y_total / len(data)
+            averages.append((x_average, y_average))
+
+        print(f"""
+        Previous Centroids: {centroids}
+        Averages: {averages}
+        """)
+
+        if (averages == centroids):
+            print("Finished.")
+            break
+        else:
+            centroids = averages
+            bins = bins_setup(centroids)
 
 
 if __name__ == "__main__":
