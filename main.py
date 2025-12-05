@@ -12,22 +12,27 @@ def eucl_distance(data_point, cluster_point):
     return math.sqrt(total)
 
 
-def random_centroids(data_array, k):
+def random_centroids(x_extremities, y_extremities, k):
     # k          = number of random centroids
     # data_array = the data being used
 
     centroids = []
     for _ in range(k):
-        unique = False
-        while not unique:
-            random_x = random.randint(0, len(data_array[0]) - 1)
-            random_y = random.randint(0, len(data_array) - 1)
-            point = (random_x, random_y)
-            if point not in centroids:
-                unique = True
-                centroids.append(point)
+        centroids.append(random_centroid(
+            centroids, x_extremities, y_extremities,))
 
     return centroids
+
+
+def random_centroid(centroids, x_extremities, y_extremities,):
+    unique = False
+    while not unique:
+        random_x = random.uniform(x_extremities[0], x_extremities[1])
+        random_y = random.uniform(y_extremities[0], y_extremities[1])
+        point = (random_x, random_y)
+        if point not in centroids:
+            unique = True
+            return point
 
 
 def bins_setup(centroids):
@@ -39,16 +44,13 @@ def bins_setup(centroids):
 
 
 def main():
-    temp_data = [[1, 0, 0, 0, 0],
-                 [0, 0, 1, 0, 0],
-                 [0, 0, 0, 0, 1],
-                 [0, 1, 0, 0, 0],
-                 [0, 0, 0, 1, 0]]
     points = [(2, 4), (0, 3), (4, 1), (1, 0), (3, 3),
               (2, 1), (0, 2), (1, 4), (3, 0), (4, 2)]
 
+    x_extremities = (0, 5)
+    y_extremities = (0, 5)
     k = 3
-    centroids = random_centroids(data_array=temp_data, k=k)
+    centroids = random_centroids(x_extremities, y_extremities, k)
     bins = bins_setup(centroids)
 
     while True:
@@ -73,7 +75,8 @@ def main():
             # key = centroid
             # value = array of points that are closest to it
             if len(data) == 0:
-                averages.append((0, 0))
+                averages.append(random_centroid(
+                    averages, x_extremities, y_extremities))
                 continue
 
             x_total = y_total = 0
