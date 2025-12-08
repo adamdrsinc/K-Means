@@ -49,7 +49,7 @@ def main():
 
     x_extremities = (0, 5)
     y_extremities = (0, 5)
-    k = 3
+    k = 3  # make this a hyper parameter
     centroids = random_centroids(x_extremities, y_extremities, k)
     bins = bins_setup(centroids)
 
@@ -102,3 +102,11 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+# Notes from Rich
+# Make it n-dimensional
+# Make K a hyper parameter
+# Do some calculations on how good the clustering is - silouhette, dunn index <- can use python library if needed, try not to
+# everything is in one function - separate it out (make it your own library)
+# Have dataset be a csv / like a csv
+# Use matplotlib to generate graph for rich's viewing. Generate one 2D graph and one 4D graph
