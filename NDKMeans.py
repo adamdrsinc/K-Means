@@ -8,19 +8,28 @@ import random
 # Use matplotlib to generate graph for rich's viewing. Generate one 2D graph and one 4D graph
 
 
-class MyKMeans:
-    def __init__(self, coord_list, k):
+class NDKMeans:
+    def __init__(self, coord_lists, k):
         self.k = k
+        self.coord_lists = coord_lists
+        self.coord_dimension_count = len(coord_lists[0])
 
-        """
-            NOTES
-            1. coord_list needs to be a list of lists.
-            2. You need a list of all the mins and maxes of each list in coord_list so that you can make random centroids
-            3. set a dimension count
-            4. From there go and fix the rest of your code to make it suit n-dimensions
-        """
+        self.dimension_mins_maxes = []
+        for i in range(self.coord_dimension_count):
+            smallest = coord_lists[0][i]
+            largest = coord_lists[0][i]
+            for j in range(1, len(coord_lists)):
+                current = coord_lists[j][i]
+                if current < smallest:
+                    smallest = current
+                elif current > largest:
+                    largest = current
+            self.dimension_mins_maxes.append([smallest, largest])
 
-    def eucl_distance(data_point, cluster_point):
+        self.centroids = self.random_centroids()
+        self.bins = self.make_bins()
+
+    def eucl_distance(self, data_point, cluster_point):
         # euclidean distance is defined as sqrt((x2​−x1​)^2 + (y2​−y1​)^2)
 
         total = 0
@@ -29,17 +38,17 @@ class MyKMeans:
 
         return math.sqrt(total)
 
-    def make_random_location(self, centroids, coord_count):
+    def make_random_location(self, centroids):
         unique = False
         while not unique:
-            rdm_coords_list = []
-
-            rdm_x = random.uniform(self.widths[0], self.widths[1])
-            rdm_y = random.uniform(self.heights[0], self.heights[1])
-            new_centroid = (rdm_x, rdm_y)
+            new_centroid = []
+            for i in range(len(self.dimension_mins_maxes)):
+                random_coord = random.uniform(
+                    self.dimension_mins_maxes[i][0], self.dimension_mins_maxes[i][1])
+                new_centroid.append(random_coord)
             if new_centroid not in centroids:
                 unique = True
-                return new_centroid
+                return tuple(new_centroid)
 
     def random_centroids(self):
         centroids = []
@@ -49,34 +58,21 @@ class MyKMeans:
 
         return centroids
 
-    def make_bins(centroids):
+    def make_bins(self):
         bins = {}
-        for centroid in centroids:
+        for centroid in self.centroids:
             bins[centroid] = []
 
         return bins
 
     def perform_kmeans(self):
-        if (self.x_column == None or self.y_column == None):
-            return False
-
-        centroids = self.random_centroids()
-        bins = self.make_bins(centroids)
-
-        # If the columns are not equally sized, trim the larger.
-        if len(self.x_column) != len(self.y_column):
-            largest_items = len(min(self.x_column, self.y_column, key=len))
-            self.x_column = self.x_column[:largest_items]
-            self.y_column = self.y_column[:largest_items]
-        points = zip(self.x_column, self.y_column)
-
         finished = False
         while not finished:
             # Grouping cluster with closest points
-            for point in points:
+            for point in self.coord_lists:
                 shortest_distance = None
                 closest_centroid = None
-                for centroid in centroids:
+                for centroid in self.centroids:
                     distance = self.eucl_distance(point, centroid)
                     if shortest_distance == None:
                         shortest_distance = distance
@@ -85,30 +81,32 @@ class MyKMeans:
                         shortest_distance = distance
                         closest_centroid = centroid
 
-                bins[closest_centroid].append(point)
+                self.bins[closest_centroid].append(point)
 
             # Getting averages of bins to set new clusters
             averages = []
-            for _, data in bins.items():
+            for _, data in self.bins.items():
                 if len(data) == 0:
-                    new_location = self.make_random_location(centroids)
+                    new_location = self.make_random_location(self.centroids)
                     averages.append(new_location)
                     continue
 
-                x_total = y_total = 0
-                for i in range(len(data)):
-                    x_total += data[i][0]
-                    y_total += data[i][1]
-                x_average = x_total / len(data)
-                y_average = y_total / len(data)
-                averages.append((x_average, y_average))
+                data_average = []
+                for i in range(self.coord_dimension_count):
+                    dimension_total = 0
+                    for coord in data:
+                        dimension_total += coord[i]
+                    data_average.append(dimension_total / len(data))
+                averages.append(tuple(data_average))
 
             print(f"""
-            Previous Centroids: {centroids}
+            Previous Centroids: {self.centroids}
             Averages: {averages}
             """)
 
-            if (averages == centroids):
+            if (averages == self.centroids):
                 finished = True
+                return self.bins
             else:
-                bins = self.make_bins(averages)
+                self.centroids = averages
+                self.bins = self.make_bins()
