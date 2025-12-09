@@ -1,32 +1,23 @@
 from NDKMeans import NDKMeans
+import pandas as pd
 
 
 def main():
-    points = [
-        [42, 17, 89, 63, 5],
-        [71, 28, 94, 36, 12],
-        [53, 7, 81, 44, 99],
-        [18, 65, 32, 76, 54],
-        [90, 23, 11, 87, 68],
-        [39, 58, 72, 9, 100],
-        [6, 47, 27, 84, 33],
-        [96, 15, 57, 49, 21],
-        [74, 2, 91, 60, 38],
-        [13, 86, 24, 55, 79],
-        [41, 98, 8, 67, 31],
-        [52, 19, 75, 4, 93],
-        [26, 83, 14, 50, 88],
-        [62, 3, 95, 29, 70],
-        [22, 78, 45, 16, 64],
-        [97, 34, 1, 73, 46],
-        [40, 80, 25, 10, 92],
-        [59, 20, 66, 85, 30],
-        [48, 56, 43, 35, 61],
-        [51, 82, 69, 37, 58]
-    ]
-    ndkMeans = NDKMeans(points, 3)
-    results = ndkMeans.perform_kmeans()
-    print(results)
+    customers = pd.read_csv("Mall_Customers.csv")
+    data = customers[[
+        'Age', 'Annual_Income_(k$)', 'Spending_Score']].values.tolist()
+
+    inertia_scores = {}
+    for i in range(2, 10):
+        ndkMeans = NDKMeans(data, i)
+        ndkMeans.perform_kmeans()
+        inertia_scores[i] = ndkMeans.inertia()
+
+    for key, value in inertia_scores.items():
+        print(f'K: {key}, Score: {value}')
+
+    # ndkMeans = NDKMeans(data, 5)
+    # results = ndkMeans.perform_kmeans()
 
 
 if __name__ == "__main__":

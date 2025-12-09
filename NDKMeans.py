@@ -1,10 +1,8 @@
-import math
 import random
-
+import math
+import GraphCalculations as gc
 # Notes from Rich
-# Make it n-dimensional
 # Do some calculations on how good the clustering is - silouhette, dunn index <- can use python library if needed, try not to
-# everything is in one function - separate it out (make it your own library)
 # Use matplotlib to generate graph for rich's viewing. Generate one 2D graph and one 4D graph
 
 
@@ -29,14 +27,12 @@ class NDKMeans:
         self.centroids = self.random_centroids()
         self.bins = self.make_bins()
 
-    def eucl_distance(self, data_point, cluster_point):
-        # euclidean distance is defined as sqrt((x2​−x1​)^2 + (y2​−y1​)^2)
-
-        total = 0
-        for i in range(len(data_point)):
-            total += math.pow(cluster_point[i] - data_point[i], 2)
-
-        return math.sqrt(total)
+    def inertia(self):
+        inertia = 0
+        for centroid, points in self.bins.items():
+            for point in points:
+                inertia += math.pow(gc.eucl_distance(point, centroid), 2)
+        return inertia
 
     def make_random_location(self, centroids):
         unique = False
@@ -73,7 +69,7 @@ class NDKMeans:
                 shortest_distance = None
                 closest_centroid = None
                 for centroid in self.centroids:
-                    distance = self.eucl_distance(point, centroid)
+                    distance = gc.eucl_distance(point, centroid)
                     if shortest_distance == None:
                         shortest_distance = distance
                         closest_centroid = centroid
@@ -99,10 +95,10 @@ class NDKMeans:
                     data_average.append(dimension_total / len(data))
                 averages.append(tuple(data_average))
 
-            print(f"""
-            Previous Centroids: {self.centroids}
-            Averages: {averages}
-            """)
+            # print(f"""
+            # Previous Centroids: {self.centroids}
+            # Averages: {averages}
+            # """)
 
             if (averages == self.centroids):
                 finished = True
