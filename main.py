@@ -2,7 +2,6 @@ from NDKMeans import NDKMeans
 import MLScoring as mls
 import pandas as pd
 import matplotlib.pyplot as plot
-import math
 
 
 def show_elbow(data):
