@@ -2,9 +2,7 @@ import math
 import random
 
 # Notes from Rich
-# Make it n-dimensional
-# Do some calculations on how good the clustering is - silouhette, dunn index <- can use python library if needed, try not to
-# everything is in one function - separate it out (make it your own library)
+# Do some calculations on how good the clustering is - silouhette, dunn index <- can use python library if needed
 # Use matplotlib to generate graph for rich's viewing. Generate one 2D graph and one 4D graph
 
 
