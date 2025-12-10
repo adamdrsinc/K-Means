@@ -95,11 +95,6 @@ class NDKMeans:
                     data_average.append(dimension_total / len(data))
                 averages.append(tuple(data_average))
 
-            # print(f"""
-            # Previous Centroids: {self.centroids}
-            # Averages: {averages}
-            # """)
-
             if (averages == self.centroids):
                 finished = True
                 return self.bins
