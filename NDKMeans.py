@@ -27,7 +27,7 @@ class NDKMeans:
 
         self.centroids = self.random_centroids()
         self.bins = self.make_bins()
-        self.labelled_array = []
+        self.labels = []
 
     def inertia(self):
         inertia = 0
@@ -69,7 +69,7 @@ class NDKMeans:
     def set_up_next_iteration(self, averages):
         self.centroids = averages
         self.bins = self.make_bins()
-        self.labelled_array = []
+        self.labels = []
 
     def perform_kmeans(self):
         convergence_met = False
@@ -91,7 +91,7 @@ class NDKMeans:
                     current_centroid_index += 1
 
                 self.bins[closest_centroid].append(point)
-                self.labelled_array.append(centroid_index)
+                self.labels.append(centroid_index)
 
             # Getting averages of bins to set new clusters
             averages = []
