@@ -1,6 +1,7 @@
 import GraphCalculations as gc
 
-def silouhette_score(ndkmeans):
+def silhouette_score(ndkmeans):
+
     """
     1. For each data point, calculate two values:
     a. Average distance to all other data points within the same cluster
@@ -61,5 +62,6 @@ def silouhette_score(ndkmeans):
             silouhette_coefficient = (point_extracluster_distance_avg - point_intracluster_distance_avg) / max(point_intracluster_distance_avg, point_extracluster_distance_avg)
             silouhette_coefficient_total += silouhette_coefficient
 
-    silouhette_score = silouhette_coefficient_total / point_total
-    return silouhette_score
+    silhouette_score = silouhette_coefficient_total / point_total
+    return silhouette_score
+

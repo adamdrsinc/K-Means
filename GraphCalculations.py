@@ -9,3 +9,5 @@ def eucl_distance(data_point, cluster_point):
         total += math.pow(cluster_point[i] - data_point[i], 2)
 
     return math.sqrt(total)
+
+

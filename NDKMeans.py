@@ -7,8 +7,9 @@ import GraphCalculations as gc
 
 
 class NDKMeans:
-    def __init__(self, coord_lists, k):
+    def __init__(self, coord_lists, k, iteration_limit):
         self.k = k
+        self.iteration_limit = iteration_limit
         self.coord_lists = coord_lists
         self.coord_dimension_count = len(coord_lists[0])
 
@@ -26,6 +27,7 @@ class NDKMeans:
 
         self.centroids = self.random_centroids()
         self.bins = self.make_bins()
+        self.labelled_array = []
 
     def inertia(self):
         inertia = 0
@@ -61,23 +63,35 @@ class NDKMeans:
 
         return bins
 
+    def check_convergence(self, averages, current_iteration):
+        return averages == self.centroids or current_iteration == self.iteration_limit
+    
+    def set_up_next_iteration(self, averages):
+        self.centroids = averages
+        self.bins = self.make_bins()
+        self.labelled_array = []
+
     def perform_kmeans(self):
-        finished = False
-        while not finished:
+        convergence_met = False
+        current_iteration = 0
+        while not convergence_met:
+            current_iteration += 1
             # Grouping cluster with closest points
             for point in self.coord_lists:
                 shortest_distance = None
                 closest_centroid = None
+                centroid_index = 0
+                current_centroid_index = 0
                 for centroid in self.centroids:
                     distance = gc.eucl_distance(point, centroid)
-                    if shortest_distance == None:
+                    if shortest_distance == None or distance < shortest_distance:
                         shortest_distance = distance
                         closest_centroid = centroid
-                    elif distance < shortest_distance:
-                        shortest_distance = distance
-                        closest_centroid = centroid
+                        centroid_index = current_centroid_index
+                    current_centroid_index += 1
 
                 self.bins[closest_centroid].append(point)
+                self.labelled_array.append(centroid_index)
 
             # Getting averages of bins to set new clusters
             averages = []
@@ -95,9 +109,10 @@ class NDKMeans:
                     data_average.append(dimension_total / len(data))
                 averages.append(tuple(data_average))
 
-            if (averages == self.centroids):
-                finished = True
-                return self.bins
+            if self.check_convergence(averages, current_iteration):
+                convergence_met = True
             else:
-                self.centroids = averages
-                self.bins = self.make_bins()
+                self.set_up_next_iteration(averages)
+        
+        return self.centroids
+        
