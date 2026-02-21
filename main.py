@@ -4,28 +4,51 @@ import pandas as pd
 import GraphPlotting as gp
 from sklearn.metrics import davies_bouldin_score
 
-def main():
-    ## Red Wine Quality Data Set
+
+# INSTRUCTIONS FOR RUNNING THE PROGRAM CAN BE FOUND IN README.md
+
+def evaluate_red_wine():
     winequality_set_red = pd.read_csv("winequality-red.csv", sep=';')
-    data = winequality_set_red[['fixed acidity','volatile acidity','citric acid']].values.tolist()
 
-    gp.show_elbow(data, "Red Wine Quality Inertia by Cluster Count K")
+    # Obtaining columns of data set that I want to test
+    data = winequality_set_red[['fixed acidity', 'volatile acidity', 'citric acid']].values.tolist()
+    print(data)
+
+    # Finding elbow for the red wine quality data set
+    gp.plot_elbow(data, "Red Wine Quality Inertia by Cluster Count K")
+
+    # Performing K-means on what is perceived to be the elbow
     ndkmeans = NDKMeans(data, 4, 300)
     ndkmeans.perform_kmeans()
-    print(davies_bouldin_score(data, ndkmeans.labels))
-    print(f"Silhouette Score for red wine data set: {mls.silouhette_score(ndkmeans)}")
 
-    ###
+    # Evaluating the clustering
+    print("## Evaluating Red Wine Data Set Clustering ##")
+    print(f"Davies-Bouldin Score: {davies_bouldin_score(data, ndkmeans.labels)}")
+    print(f"Silhouette Score:{mls.silhouette_score(ndkmeans)}")
 
-    ## White Wine Quality Data Set
+
+def evaluate_white_wine():
     winequality_set_white = pd.read_csv("winequality-white.csv", sep=';')
-    data = winequality_set_white[['fixed acidity','volatile acidity','citric acid']].values.tolist()
+    data = winequality_set_white[['fixed acidity', 'volatile acidity', 'citric acid']].values.tolist()
 
-    gp.show_elbow(data, "White Wine Quality Inertia by Cluster Count K")
+    gp.plot_elbow(data, "White Wine Quality Inertia by Cluster Count K")
     ndkmeans = NDKMeans(data, 4, 300)
     ndkmeans.perform_kmeans()
-    print(davies_bouldin_score(data, ndkmeans.labels))
-    print(f"Silhouette Score for white wine data set: {mls.silouhette_score(ndkmeans)}")
+    print("## Evaluating White Wine Data Set Clustering ##")
+    print(f"Davies-Bouldin Score: {davies_bouldin_score(data, ndkmeans.labels)}")
+    print(f"Silhouette Score: {mls.silhouette_score(ndkmeans)}")
+
+
+# INSTRUCTIONS FOR RUNNING THE PROGRAM CAN BE FOUND IN README.md
+def main():
+    ## Red Wine Quality CSV from Wine Quality Data Set
+    evaluate_red_wine()
+
+    print("")
+
+    ## White Wine Quality CSV from Wine Quality Data Set. The same steps as above are performed.
+    evaluate_white_wine()
+
 
 if __name__ == "__main__":
     main()
