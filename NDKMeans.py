@@ -20,23 +20,7 @@ class NDKMeans:
         self.iteration_limit = iteration_limit
         self.data = data
         self.coord_dimension_count = len(data[0])
-
-        self.columnsMinAndMax = []
-
-        # Getting the minimum and maximum of each column
-        for column in range(self.coord_dimension_count):
-            # Set smallest and largest to column's first row
-            minimum = data[0][column]
-            maximum = data[0][column]
-
-            for row in range(0, len(data)):
-                current = data[row][column]
-                minimum = min(current, minimum)
-                maximum = max(current, maximum)
-
-            self.columnsMinAndMax.append({"minimum": minimum, "maximum": maximum})
-
-        self.centroids = self.random_centroids()
+        self.centroids = self.initial_centroids()
         self.bins = self.make_bins()
         self.labels = []
 
@@ -47,32 +31,16 @@ class NDKMeans:
                 inertia += math.pow(gc.eucl_distance(point, centroid), 2)
         return inertia
 
-    def make_random_location(self, centroids):
-        """
-        Makes a random coordinate for a centroid.
+    def pick_random_location(self):
+        generated = random.randint(0, len(self.data) - 1)
+        picked_item = self.data[generated]
+        return tuple(picked_item)
 
-        :param centroids: A list of centroids.
-        :returns: A tuple representing a new centroid.
-        """
-        unique = False
-        while not unique:
-            new_centroid = []
-            for column in range(len(self.columnsMinAndMax)):
-                random_coord = random.uniform(
-                    self.columnsMinAndMax[column]["minimum"], self.columnsMinAndMax[column]["maximum"])
-                new_centroid.append(random_coord)
-            if new_centroid not in centroids:
-                return tuple(new_centroid)
-
-    def random_centroids(self):
-        """
-        Makes a new list of centroids.
-        :returns: A new list of centroid tuples.
-        """
+    def initial_centroids(self):
         centroids = []
         for _ in range(self.k):
-            new_location = self.make_random_location(centroids)
-            centroids.append(new_location)
+            centroid = self.pick_random_location()
+            centroids.append(centroid)
 
         return centroids
 

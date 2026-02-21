@@ -12,7 +12,6 @@ def evaluate_red_wine():
 
     # Obtaining columns of data set that I want to test
     data = winequality_set_red[['fixed acidity', 'volatile acidity', 'citric acid']].values.tolist()
-    print(data)
 
     # Finding elbow for the red wine quality data set
     gp.plot_elbow(data, "Red Wine Quality Inertia by Cluster Count K")
