@@ -1,7 +1,7 @@
 import GraphCalculations as gc
 
-def silhouette_score(ndkmeans):
 
+def silhouette_score(ndkmeans):
     """
     1. For each data point, calculate two values:
     a. Average distance to all other data points within the same cluster
@@ -17,23 +17,23 @@ def silhouette_score(ndkmeans):
         shortest_distance = gc.eucl_distance(point, ndkmeans.centroids[0])
         closest_centroid = ndkmeans.centroids[0]
         for i in range(1, len(ndkmeans.centroids)):
-            if(ndkmeans.centroids[i] == this_points_centroid):
+            if (ndkmeans.centroids[i] == this_points_centroid):
                 continue
             distance = gc.eucl_distance(point, ndkmeans.centroids[i])
             if distance < shortest_distance:
                 shortest_distance = distance
                 closest_centroid = ndkmeans.centroids[i]
-        
+
         return closest_centroid
-             
+
     silouhette_coefficient_total = 0
     point_total = 0
     for centroid, points in ndkmeans.bins.items():
-        point_total += len(points)        
+        point_total += len(points)
         # For each data point
         for i in range(len(points)):
             point = points[i]
-            
+
             # 1. Calculate average distance to all other data points within the same cluster
             point_intracluster_distance_total = 0
             for j in range(len(points)):
@@ -56,12 +56,10 @@ def silhouette_score(ndkmeans):
                 point_extracluster_distance_total += distance
             point_extracluster_distance_avg = point_extracluster_distance_total / len(closest_centroid_points)
 
-            # print(f"\n intracluster_total: {point_intracluster_distance_total}\nintracluster_avg: {point_intracluster_distance_avg}\nextracluster_total: {point_extracluster_distance_total}\nextracluster_avg: {point_extracluster_distance_avg}\n")
-
             # 4. Calculate coefficient
-            silouhette_coefficient = (point_extracluster_distance_avg - point_intracluster_distance_avg) / max(point_intracluster_distance_avg, point_extracluster_distance_avg)
+            silouhette_coefficient = (point_extracluster_distance_avg - point_intracluster_distance_avg) / max(
+                point_intracluster_distance_avg, point_extracluster_distance_avg)
             silouhette_coefficient_total += silouhette_coefficient
 
     silhouette_score = silouhette_coefficient_total / point_total
     return silhouette_score
-
