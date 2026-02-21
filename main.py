@@ -11,7 +11,9 @@ def evaluate_red_wine():
     winequality_set_red = pd.read_csv("winequality-red.csv", sep=';')
 
     # Obtaining columns of data set that I want to test
-    data = winequality_set_red[['fixed acidity', 'volatile acidity', 'citric acid']].values.tolist()
+    data = winequality_set_red[
+        ["fixed acidity", "volatile acidity", "citric acid", "residual sugar", "chlorides", "free sulfur dioxide",
+         "total sulfur dioxide", "density", "pH", "sulphates", "alcohol"]].values.tolist()
 
     # Finding elbow for the red wine quality data set
     gp.plot_elbow(data, "Red Wine Quality Inertia by Cluster Count K")
@@ -28,7 +30,8 @@ def evaluate_red_wine():
 
 def evaluate_white_wine():
     winequality_set_white = pd.read_csv("winequality-white.csv", sep=';')
-    data = winequality_set_white[['fixed acidity', 'volatile acidity', 'citric acid']].values.tolist()
+    data = winequality_set_white[["fixed acidity", "volatile acidity", "citric acid", "residual sugar", "chlorides", "free sulfur dioxide",
+         "total sulfur dioxide", "density", "pH", "sulphates", "alcohol"]].values.tolist()
 
     gp.plot_elbow(data, "White Wine Quality Inertia by Cluster Count K")
     ndkmeans = NDKMeans(data, 4, 300)
