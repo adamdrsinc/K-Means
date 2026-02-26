@@ -26,7 +26,8 @@ class NDKMeans:
 
     def inertia(self):
         inertia = 0
-        for centroid, points in self.bins.items():
+        for centroid_index, points in self.bins.items():
+            centroid = self.centroids[centroid_index]
             for point in points:
                 inertia += math.pow(gc.eucl_distance(point, centroid), 2)
         return inertia
@@ -46,8 +47,8 @@ class NDKMeans:
 
     def make_bins(self):
         bins = {}
-        for centroid in self.centroids:
-            bins[centroid] = []
+        for centroid_index in range(len(self.centroids)):
+            bins[centroid_index] = []
 
         return bins
 
@@ -68,7 +69,15 @@ class NDKMeans:
             for point in self.data:
                 shortest_distance = None
                 closest_centroid = None
-                centroid_index = 0
+
+                for i in range(len(self.centroids)):
+                    distance = gc.eucl_distance(point, self.centroids[i])
+                    if shortest_distance is None or distance < shortest_distance:
+                        shortest_distance = distance
+                        closest_centroid = i
+
+
+                """ centroid_index = 0
                 current_centroid_index = 0
                 for centroid in self.centroids:
                     distance = gc.eucl_distance(point, centroid)
@@ -76,10 +85,10 @@ class NDKMeans:
                         shortest_distance = distance
                         closest_centroid = centroid
                         centroid_index = current_centroid_index
-                    current_centroid_index += 1
+                    current_centroid_index += 1"""
 
                 self.bins[closest_centroid].append(point)
-                self.labels.append(centroid_index)
+                self.labels.append(closest_centroid)
 
             # Getting averages of bins to set new clusters
             averages = []
