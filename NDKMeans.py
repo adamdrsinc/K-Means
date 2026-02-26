@@ -1,6 +1,22 @@
 import random
 import math
-import GraphCalculations as gc
+
+
+def eucl_distance(first_point, second_point):
+    """
+    Calculates the Euclidean distance between two points on a graph. Assumes data points are equal in dimensions.
+    The data points provided must be lists.
+    :param first_point: The first data point.
+    :param second_point: The second data point.
+    :return: The Euclidean distance.
+    """
+    # euclidean distance is defined as sqrt((x2​−x1​)^2 + (y2​−y1​)^2)
+
+    total = 0
+    for i in range(len(first_point)):
+        total += math.pow(second_point[i] - first_point[i], 2)
+
+    return math.sqrt(total)
 
 
 class NDKMeans:
@@ -29,13 +45,13 @@ class NDKMeans:
         for centroid_index, points in self.bins.items():
             centroid = self.centroids[centroid_index]
             for point in points:
-                inertia += math.pow(gc.eucl_distance(point, centroid), 2)
+                inertia += math.pow(eucl_distance(point, centroid), 2)
         return inertia
 
     def pick_random_location(self):
         generated = random.randint(0, len(self.data) - 1)
         picked_item = self.data[generated]
-        return tuple(picked_item)
+        return picked_item
 
     def initial_centroids(self):
         centroids = []
@@ -71,21 +87,10 @@ class NDKMeans:
                 closest_centroid = None
 
                 for i in range(len(self.centroids)):
-                    distance = gc.eucl_distance(point, self.centroids[i])
+                    distance = eucl_distance(point, self.centroids[i])
                     if shortest_distance is None or distance < shortest_distance:
                         shortest_distance = distance
                         closest_centroid = i
-
-
-                """ centroid_index = 0
-                current_centroid_index = 0
-                for centroid in self.centroids:
-                    distance = gc.eucl_distance(point, centroid)
-                    if shortest_distance is None or distance < shortest_distance:
-                        shortest_distance = distance
-                        closest_centroid = centroid
-                        centroid_index = current_centroid_index
-                    current_centroid_index += 1"""
 
                 self.bins[closest_centroid].append(point)
                 self.labels.append(closest_centroid)
@@ -107,7 +112,7 @@ class NDKMeans:
                     for coord in data:
                         dimension_total += coord[i]
                     data_average.append(dimension_total / len(data))
-                averages.append(tuple(data_average))
+                averages.append(data_average)
 
             # If the centroids don't move or the iteration count is reached, convergence is met
             if self.check_convergence(averages, current_iteration):

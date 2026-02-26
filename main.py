@@ -25,7 +25,7 @@ def evaluate_red_wine():
     # Evaluating the clustering
     print("## Evaluating Red Wine Data Set Clustering ##")
     print(f"Davies-Bouldin Score: {davies_bouldin_score(data, ndkmeans.labels)}")
-    print(f"Silhouette Score:{mls.silhouette_score(ndkmeans)}")
+    print(f"Silhouette Score:{mls.silhouette_score_average(ndkmeans)}")
 
 
 def evaluate_white_wine():
@@ -38,7 +38,7 @@ def evaluate_white_wine():
     ndkmeans.perform_kmeans()
     print("## Evaluating White Wine Data Set Clustering ##")
     print(f"Davies-Bouldin Score: {davies_bouldin_score(data, ndkmeans.labels)}")
-    print(f"Silhouette Score: {mls.silhouette_score(ndkmeans)}")
+    print(f"Average Silhouette Score: {mls.silhouette_score_average(ndkmeans)}")
 
 
 # INSTRUCTIONS FOR RUNNING THE PROGRAM CAN BE FOUND IN README.md

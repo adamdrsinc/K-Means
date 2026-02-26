@@ -1,30 +1,38 @@
-import GraphCalculations as gc
+from NDKMeans import eucl_distance
 
 
-def silhouette_score(ndkmeans):
+def silhouette_score_average(ndkmeans):
     """
-    1. For each data point, calculate two values:
-    a. Average distance to all other data points within the same cluster
-    b. Average distance to all data points within the nearest neighbouring cluster
+    Calculates the average silhouette score according to Rousseeuw, 1987.
 
-    2. Compute the silhouette coefficient for each data point:
-    = (1b - 1a) / max(1a, 1b)
+    1. a(i) = average dissimilarity of i to all other objects of cluster A
+    2. d(i, C) = average dissimilarity of i to all objects of C
+    3. b(i) = minimum d(i, C), where C != A
+    4. silhouette = b(i) - a(i) / max(a(i), b(i))
 
-    1. Calcualte the average silhouette coefficient
+    All silhouettes are made and then averaged, which is returned.
     """
 
-    def find_closest_centroid_index(point, this_points_centroid):
-        shortest_distance = gc.eucl_distance(point, ndkmeans.centroids[0])
-        closest_centroid_index = 0
-        for i in range(1, len(ndkmeans.centroids)):
-            if (ndkmeans.centroids[i] == this_points_centroid):
+    def average_distance_inner(point, cluster, index_to_miss):
+        total_distance = 0.0
+        for i in range(len(cluster)):
+            if i == index_to_miss:
                 continue
-            distance = gc.eucl_distance(point, ndkmeans.centroids[i])
-            if distance < shortest_distance:
-                shortest_distance = distance
-                closest_centroid_index = i
+            distance = eucl_distance(point, cluster[i])
+            total_distance += distance
 
-        return closest_centroid_index
+        avg_distance = total_distance / (len(cluster) - 1)
+        return avg_distance
+
+    # Find average inter-cluster distance - average distance between all cluster centroids
+    def average_intercluster_distance(point, cluster):
+        total_distance = 0.0
+        for i in range(len(cluster)):
+            distance = eucl_distance(point, cluster[i])
+            total_distance += distance
+
+        avg_distance = total_distance / (len(cluster) - 1)
+        return avg_distance
 
     silouhette_coefficient_total = 0
     point_total = 0
@@ -35,32 +43,21 @@ def silhouette_score(ndkmeans):
         for i in range(len(points)):
             point = points[i]
 
-            # 1. Calculate average distance to all other data points within the same cluster
-            point_intracluster_distance_total = 0
-            for j in range(len(points)):
-                if i == j:
+            # a(i) = average dissimilarity of i to all other objects of A
+            avg_intracluster_distance = average_distance_inner(point, points, i)
+
+            # b(i) = minimum d(i, C), where C != A
+            shortest_distance = None
+            for inner_index, inner_points in ndkmeans.bins.items():
+                if centroid_index == inner_index:
                     continue
-                other_point = points[j]
-                distance = gc.eucl_distance(point, other_point)
-                point_intracluster_distance_total += distance
-            point_intracluster_distance_avg = point_intracluster_distance_total / len(points)
+                avg_intercluster_distance = average_intercluster_distance(point, inner_points)
+                if shortest_distance is None or avg_intercluster_distance < shortest_distance:
+                    shortest_distance = avg_intercluster_distance
 
-            # 2. Find the nearest neighbouring cluster to this data point
-            # 3. Calculate the average distance to all data points in this neighbouring cluster from the
-            #    current data point
-            closest_centroid = find_closest_centroid_index(point, centroid)
+            # silhouette = b(i) - a(i) / max(a(i), b(i))
+            coefficient = (shortest_distance - avg_intracluster_distance) / max(avg_intracluster_distance,
+                                                                                shortest_distance)
+            silouhette_coefficient_total += coefficient
 
-            point_extracluster_distance_total = 0
-            closest_centroid_points = ndkmeans.bins[closest_centroid]
-            for closest_centroid_point in closest_centroid_points:
-                distance = gc.eucl_distance(point, closest_centroid_point)
-                point_extracluster_distance_total += distance
-            point_extracluster_distance_avg = point_extracluster_distance_total / len(closest_centroid_points)
-
-            # 4. Calculate coefficient
-            silouhette_coefficient = (point_extracluster_distance_avg - point_intracluster_distance_avg) / max(
-                point_intracluster_distance_avg, point_extracluster_distance_avg)
-            silouhette_coefficient_total += silouhette_coefficient
-
-    silhouette_score = silouhette_coefficient_total / point_total
-    return silhouette_score
+    return f"{(silouhette_coefficient_total / point_total):.3f}"
