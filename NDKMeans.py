@@ -86,7 +86,7 @@ class NDKMeans:
             for _, data in self.bins.items():
                 # If a centroid has no points closest to it, move it
                 if len(data) == 0:
-                    new_location = self.make_random_location(self.centroids)
+                    new_location = self.pick_random_location()
                     averages.append(new_location)
                     continue
 
