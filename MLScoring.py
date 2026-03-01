@@ -3,7 +3,7 @@ from NDKMeans import eucl_distance
 
 def silhouette_score_average(ndkmeans):
     """
-    Calculates the average silhouette score according to Rousseeuw, 1987.
+    Calculates the mean silhouette score according to Rousseeuw, 1987.
 
     1. a(i) = average dissimilarity of i to all other objects of cluster A
     2. d(i, C) = average dissimilarity of i to all objects of C
@@ -60,4 +60,4 @@ def silhouette_score_average(ndkmeans):
                                                                                 shortest_distance)
             silouhette_coefficient_total += coefficient
 
-    return f"{(silouhette_coefficient_total / point_total):.3f}"
+    return silouhette_coefficient_total / point_total

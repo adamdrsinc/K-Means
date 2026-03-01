@@ -21,16 +21,3 @@ def plot_elbow(data, title):
     plot.ylabel("Inertia")
     plot.xlabel("K Value")
     plot.show()
-
-
-def plot_cardinality(ndkmeans):
-    centroids = [i for i in range(0, len(ndkmeans.centroids))]
-    points = []
-    for _, values in ndkmeans.bins.items():
-        points.append(len(values))
-
-    plot.bar(centroids, points)
-    plot.xlabel("Centroid")
-    plot.ylabel("Number of Items")
-    plot.title("Number of Items by Centroid")
-    plot.show()
