@@ -25,7 +25,7 @@ class NDKMeans:
     hyperparameters:
 
     :param data: the data to perform K-means on. This data must be given as a 2D array, each array within
-    representing a row of columns.
+    representing a row of data in a table.
     :param k: the number of clusters desired.
     :param iteration_limit: the max number
     of times NDKMeans will try to reach convergence before continuing.
